@@ -18,6 +18,10 @@ Local Sender (MSAL) → Application Gateway (WAF) → Container App (JWT Validat
 ## Quick Start
 
 ```bash
+# Clone repository
+git clone https://github.com/pelithne/jwt-token-test.git
+cd jwt-token-test
+
 # Login
 az login
 az account set --subscription <subscription-id>
