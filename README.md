@@ -61,31 +61,6 @@ Values displayed after deployment.
 | `/api/protected` | GET | Yes | Protected resource |
 | `/api/token-info` | POST | Yes | Token claims |
 
-## Configuration
-
-**Infrastructure** (infra/main.bicepparam):
-```bicep
-param location = 'swedencentral'
-param environmentName = 'dev'
-param applicationName = 'jwttest'
-param tenantId = 'YOUR_TENANT_ID'
-```
-
-**Backend Environment Variables**:
-- `AZURE_TENANT_ID`: Tenant ID
-- `AZURE_CLIENT_ID`: App registration client ID
-- `PORT`: HTTP port (default: 8080)
-
-**Sender Environment Variables**:
-- `AZURE_TENANT_ID`: Tenant ID
-- `AZURE_CLIENT_ID`: App registration client ID
-- `API_SCOPE`: OAuth scope (api://client-id/access_as_user)
-- `BACKEND_ENDPOINT`: Application Gateway URL
-
-## JWT Validation
-
-Validates: signature (JWKS), issuer (v1.0/v2.0), audience (api://client-id), expiration (exp/nbf/iat), algorithm (RS256).
-
 ## Manual Deployment
 
 ### App Registration
@@ -96,8 +71,6 @@ az ad app create --display-name "jwttest-dev" \
   --enable-id-token-issuance true \
   --public-client-redirect-uris "http://localhost"
 
-# Add scope
-./scripts/fix-app-registration.sh
 ```
 
 ### Infrastructure
@@ -129,27 +102,6 @@ az containerapp update \
   --set-env-vars "AZURE_TENANT_ID=<tenant>" "AZURE_CLIENT_ID=<client>"
 ```
 
-## Troubleshooting
-
-**WAF 403 Errors**:
-```bash
-az network application-gateway waf-policy policy-setting update \
-  --policy-name <waf> --resource-group <rg> --mode Detection
-```
-
-**Backend Health**:
-```bash
-az containerapp show --name <app> -g <rg> \
-  --query "properties.{status:runningStatus,fqdn:configuration.ingress.fqdn}"
-
-az containerapp logs show --name <app> -g <rg> --tail 50
-```
-
-**Token Issues**:
-```bash
-az ad app show --id <client-id> \
-  --query "{identifierUris:identifierUris,scopes:api.oauth2PermissionScopes[*].value}"
-```
 
 ## Cleanup
 
@@ -158,17 +110,6 @@ az group delete --name rg-jwttest-dev-swedencentral --yes
 az ad app delete --id <client-id>
 ```
 
-## Cost Estimate
-
-Monthly: Application Gateway WAF_v2 ($300) + Container Apps ($20) + ACR ($20) + Other ($10) = ~$350
-
-## Security
-
-- WAF enabled (Detection mode for testing)
-- Managed identity for ACR
-- No credentials in code
-- JWT validation at app level
-- Microsoft JWKS validation
 
 ## License
 
