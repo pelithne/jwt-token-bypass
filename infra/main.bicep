@@ -85,9 +85,6 @@ module containerAppsEnv 'modules/container-apps-environment.bicep' = {
     subnetId: networking.outputs.containerAppsSubnetId
     tags: tags
   }
-  dependsOn: [
-    networking
-  ]
 }
 
 // Deploy Backend Container App
@@ -104,11 +101,6 @@ module backendApp 'modules/backend-app.bicep' = {
     clientId: appRegistration.outputs.clientId
     tags: tags
   }
-  dependsOn: [
-    containerAppsEnv
-    containerRegistry
-    appRegistration
-  ]
 }
 
 // Deploy Application Gateway
@@ -126,10 +118,6 @@ module applicationGateway 'modules/application-gateway.bicep' = {
     clientId: appRegistration.outputs.clientId
     tags: tags
   }
-  dependsOn: [
-    networking
-    backendApp
-  ]
 }
 
 // Outputs

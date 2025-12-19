@@ -26,7 +26,7 @@ cd jwt-token-bypass
 az login
 az account set --subscription <subscription-id>
 
-# Deploy
+# Deploy infrastructure
 ./scripts/deploy.sh
 
 # Test
